@@ -26,6 +26,8 @@ void list_add(List^ l, void^ v)
     Node ^n = malloc(32)
     n.prev = null
     n.next = l.first
+    if(l.first != null)
+        l.first.prev = n
     n.val = v
     l.first = n
 }
@@ -74,10 +76,7 @@ void^ list_remove(List ^l)
     if(next != null)
         next.prev = prev
 
-    if(prev != null)
-        l.ptr = prev
-    else 
-        l.ptr = next
+    l.ptr = next
 
     return val
 }

@@ -14,6 +14,8 @@ import "mouse.wl"
 SDL_Surface^ screen = null
 SDL_Surface^ buffer = null
 SDL_Surface^ light = null
+SDL_Surface^ title = null
+SDL_Surface^ howto = null
 int8^ keystate = null
 bool running = true
 
@@ -63,14 +65,14 @@ void dolight()
         }
 }
 
-void scaleBlit()
+void scaleBlit(SDL_Surface^ dst, SDL_Surface^ src)
 {
     for(int j = 0; j < 480; j++)
     {
         for(int i = 0; i < 640; i++)
         {
-            int pxl = getPixel(buffer, i / 2, j / 2) 
-            setPixel(screen, i, j, pxl)
+            int pxl = getPixel(src, i / 2, j / 2) 
+            setPixel(dst, i, j, pxl)
         }
     }
     //SDL_BlitSurface(buffer, &buffer.clip_rect, screen, &screen.clip_rect)
@@ -82,8 +84,11 @@ void draw()
     SDL_FillRect(light, null, 0)
 
     background_draw(buffer)
+    mice_draw(buffer)
     owl_draw(owl, buffer)
     owl_light(owl, light)
+
+    
 
     list_begin(fireballs)
     while(!list_end(fireballs))
@@ -97,7 +102,7 @@ void draw()
     frag_light(light)
 
     dolight()
-    scaleBlit()
+    scaleBlit(screen, buffer)
     SDL_Flip(screen)
 }
 
@@ -106,12 +111,15 @@ void update()
     input() 
     background_update()
     owl_update(owl)
+    mice_update()
 
     list_begin(fireballs)
     while(!list_end(fireballs))
     {
         if(fireball_update(list_get(fireballs)))
+        {
             list_remove(fireballs)
+        }
         list_next(fireballs)
     }
 
@@ -137,7 +145,7 @@ void input()
 
 void addFireball()
 {
-    list_add(fireballs, fireball_new(owl.x, owl.y))
+    list_add(fireballs, fireball_new(owl.x - 4, owl.y - 8))
 }
 
 void init()
@@ -147,6 +155,8 @@ void init()
         screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
     light = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen.format.BitsPerPixel,
         screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
+
+    title = IMG_Load("res/title.png")
 
     srand(0)
     background_init()
@@ -158,9 +168,28 @@ void init()
     SDL_WM_SetCaption("Jam 2014", null)
 }
 
+void waitOnSurface(SDL_Surface^ sf)
+{
+    bool escape = false
+    while(!escape)
+    {
+        scaleBlit(screen, sf)  
+        SDL_PumpEvents()
+        keystate = SDL_GetKeyState(0)
+        if(keystate[SDLK_a]) escape = true
+        SDL_Delay(16)
+    }
+}
+
 int main(int argc, char^^ argv)
 {
     init()
+
+    /*
+        waitOnSurface(title)
+        waitOnSurface(howto)
+    */
+
     while(running)
     {
         input()
