@@ -3,9 +3,12 @@ import "list.wl"
 import "sdl.wl"
 import "sprite.wl"
 import "cstdlib.wl"
+import "halo.wl"
 
 List^ mice = null
 Sprite^ mouseSprite = null
+Sprite^ mouseFire1 = null
+Sprite^ mouseFire2 = null
 
 struct Mouse
 {
@@ -22,6 +25,8 @@ void mice_init()
 {
     mice = list_new()
     mouseSprite = sprite_new("res/mouse.png")
+    mouseFire1 = sprite_new("res/mousefire1.png")
+    mouseFire2 = sprite_new("res/mousefire2.png")
     list_add(mice, mouse_new())
     list_add(mice, mouse_new())
     list_add(mice, mouse_new())
@@ -58,11 +63,39 @@ void mouse_update(Mouse^ m)
     m.timer = m.timer - 1
 }
 
+void mouse_enflame(Mouse^ m)
+{
+    m.flaming = true    
+}
+
 void mouse_draw(Mouse^ m, SDL_Surface^ sf)
 {
-    mouseSprite.x = m.x
-    mouseSprite.y = m.y
-    sprite_draw(sf, mouseSprite)    
+    if(m.flaming){
+        if((m.timer / 10) % 2 == 0)
+        {
+            mouseFire1.x = m.x
+            mouseFire1.y = m.y
+            sprite_draw(sf, mouseFire1)    
+        } else
+        {
+            mouseFire2.x = m.x
+            mouseFire2.y = m.y
+            sprite_draw(sf, mouseFire2)    
+        }
+    }
+    else{
+        mouseSprite.x = m.x
+        mouseSprite.y = m.y
+        sprite_draw(sf, mouseSprite)    
+    }
+}
+
+void mouse_light(Mouse^ m, SDL_Surface^ sf)
+{
+    if(m.flaming)
+    {
+        halo_draw(sf, 4, m.x, m.y) 
+    }
 }
 
 void mice_update()
@@ -75,6 +108,16 @@ void mice_update()
 
         if(m.y > 240) list_remove(mice)
         list_next(mice)    
+    }
+}
+
+void mice_light(SDL_Surface^ sf)
+{
+    list_begin(mice)
+    while(!list_end(mice))
+    {
+        mouse_light(list_get(mice), sf)    
+        list_next(mice)
     }
 }
 

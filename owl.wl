@@ -2,6 +2,7 @@ import "sprite.wl"
 import "cstdlib.wl"
 import "sdl.wl"
 import "fireball.wl"
+import "halo.wl"
 
 struct Owl
 {
@@ -61,7 +62,7 @@ void owl_update(Owl^ o)
 
 void owl_light(Owl^ o, SDL_Surface^ dst)
 {
-    sprite_draw(dst, o.halo)    
+    halo_draw(dst, 5, o.x, o.y)
 }
 
 void owl_draw(Owl^ o, SDL_Surface^ dst)

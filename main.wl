@@ -10,6 +10,7 @@ import "list.wl"
 import "bg.wl"
 import "particle.wl"
 import "mouse.wl"
+import "halo.wl"
 
 SDL_Surface^ screen = null
 SDL_Surface^ buffer = null
@@ -65,6 +66,33 @@ void dolight()
         }
 }
 
+float distanceTo(float ax, float ay, float bx, float by)
+{
+    float dx = ax - bx
+    float dy = ay - by
+    return dx * dx + dy * dy //meh, who needs squareroot?
+}
+
+// this is my favourite function
+// and would be even better if not for the N^2 complexity
+void burnifyMice()
+{
+    list_begin(fireballs)
+    while(!list_end(fireballs))
+    {
+        Particle ^fb = list_get(fireballs)
+        list_begin(mice)
+        while(!list_end(mice))
+        {
+            Mouse^ ms = list_get(mice)
+            if(distanceTo(ms.x, ms.y, fb.x, fb.y) < 20)
+                mouse_enflame(ms)
+            list_next(mice)    
+        }
+        list_next(fireballs) 
+    }
+}
+
 void scaleBlit(SDL_Surface^ dst, SDL_Surface^ src)
 {
     for(int j = 0; j < 480; j++)
@@ -98,6 +126,8 @@ void draw()
         list_next(fireballs)
     }
 
+    mice_light(light)
+
     frag_draw(buffer)
     frag_light(light)
 
@@ -123,7 +153,9 @@ void update()
         list_next(fireballs)
     }
 
-    SDL_Delay(16)
+    burnifyMice()
+
+    SDL_Delay(8)
 }
 
 float OWLSPEED = 2.0
@@ -160,6 +192,7 @@ void init()
 
     srand(0)
     background_init()
+    halo_init()
     particle_init()
     mice_init()
     owl = owl_new()
