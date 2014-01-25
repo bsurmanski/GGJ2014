@@ -363,3 +363,8 @@ SDL_Surface^ SDL_CreateRGBSurface(uint flags, int width, int height, int depth,
                                   int32 rmask, int32 gmask, int32 bmask, int32 amask);
 int SDL_Flip(SDL_Surface^ surf);
 
+int SDL_UpperBlit(SDL_Surface^ src, SDL_Rect^ srcrect, SDL_Surface^ dst, SDL_Rect^ dstrect);
+int SDL_BlitSurface(SDL_Surface^ src, SDL_Rect^ srcrect, SDL_Surface^ dst, SDL_Rect^ dstrect)
+    return SDL_UpperBlit(src, srcrect, dst, dstrect);
+
+int SDL_FillRect(SDL_Surface^ s, SDL_Rect^ rect, uint32 color);

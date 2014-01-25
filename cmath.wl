@@ -27,6 +27,7 @@ double log(double x);
 double pow(double base, double exp);
 double sqrt(double x);
 void sincos(double x, double^ sn, double^ cs);
+void sincosf(float x, float^ sn, float^ cs);
 
 float sinf(float x);
 float cosf(float x);
