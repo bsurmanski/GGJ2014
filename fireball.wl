@@ -2,31 +2,55 @@ import "sprite.wl"
 import "cstdlib.wl"
 import "cstdio.wl"
 import "sdl.wl"
+import "list.wl"
+import "main.wl"
 
+Sprite^ fireballSprite = null
+Sprite^ fireballLight = null
 struct Fireball
 {
-    Sprite ^sprite    
     float x
     float y
 }
 
 Fireball^ fireball_new(float x, float y)
 {
-    Fireball^ fb = malloc(32) 
-    fb.sprite = sprite_new("res/fireball.png")
+    if(fireballLight == null)
+    {
+        fireballLight = sprite_new("res/fireball.png")    
+    }
+
+    if(fireballSprite == null)
+    {
+        fireballSprite = sprite_new("res/fireball.png")
+    }
+
+    Fireball^ fb = malloc(16) 
     fb.x = x
     fb.y = y
     return fb
 }
 
-void fireball_update(Fireball^ fb)
+bool fireball_update(Fireball^ fb)
 {
     fb.y = fb.y - 5.0
+    return (fb.y > 240 ||
+        fb.y < 0 ||
+        fb.x < 0 ||
+        fb.x > 320);
+            
+}
+
+void fireball_light(Fireball^ fb, SDL_Surface^ dst)
+{
+    fireballLight.x = fb.x
+    fireballLight.y = fb.y
+    sprite_draw(dst, fireballLight)    
 }
 
 void fireball_draw(Fireball^ fb, SDL_Surface^ dst)
 {
-    fb.sprite.x = fb.x
-    fb.sprite.y = fb.y
-    sprite_draw(dst, fb.sprite)
+    fireballSprite.x = fb.x
+    fireballSprite.y = fb.y
+    sprite_draw(dst, fireballSprite)
 }

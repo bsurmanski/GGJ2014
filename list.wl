@@ -42,9 +42,11 @@ bool list_end(List ^l)
 
 void^ list_next(List ^l)
 {
-    l.ptr = (Node^: l.ptr).next
-    if(!(l.ptr == null))
-        return l.ptr.val
+    if(!(l.ptr == null)) {
+        l.ptr = (Node^: l.ptr).next
+        if(!(l.ptr == null))
+            return l.ptr.val
+    }
     return int8^: null
 }
 
@@ -56,13 +58,13 @@ void^ list_get(List^ l)
 void^ list_remove(List ^l)
 {
     void^ val = (Node^: l.ptr).val
-    Node^ cont = (Node^:l.ptr).next
+    Node^ cont = (Node^: l.ptr).next
     if(!(l.ptr.prev == null))
     {
         (Node^: l.ptr.prev).next = (Node^:l.ptr).next
     }
 
-    if((l.ptr.next == null))
+    if(!(l.ptr.next == null))
     {
         (Node^: l.ptr.next).prev = (Node^:l.ptr).prev 
     }

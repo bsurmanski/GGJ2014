@@ -12,6 +12,7 @@ struct Owl
     Sprite^ wingl
     Sprite^ wingr
     Sprite^ tail
+    Sprite^ halo
 }
 
 int HEADX = 8 
@@ -23,16 +24,20 @@ int BODYY = 0
 int WINGX = 20
 int WINGY = 8
 
+int HALOX = 32
+int HALOY = 16
+
 Owl^ owl_new()
 {
     Owl^ o = malloc(128)
-    o.x = 0
-    o.y = 0
+    o.x = 160
+    o.y = 200
     o.head = sprite_new("res/owlhead.png") 
     o.body = sprite_new("res/owlbody.png") 
     o.wingl = sprite_new("res/owlwingl.png") 
     o.wingr = sprite_new("res/owlwingr.png") 
     o.tail = sprite_new("res/owltail.png")
+    o.halo = sprite_new("res/owlhalo.png")
     
     return o
 }
@@ -49,6 +54,14 @@ void owl_update(Owl^ o)
     o.wingl.y = o.y + WINGY
     o.wingr.x = o.x + WINGX - 8.0
     o.wingr.y = o.y + WINGY
+
+    o.halo.x = o.x - HALOX
+    o.halo.y = o.y - HALOY
+}
+
+void owl_light(Owl^ o, SDL_Surface^ dst)
+{
+    sprite_draw(dst, o.halo)    
 }
 
 void owl_draw(Owl^ o, SDL_Surface^ dst)

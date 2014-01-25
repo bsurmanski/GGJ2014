@@ -7,39 +7,93 @@ import "sprite.wl"
 import "owl.wl"
 import "fireball.wl"
 import "list.wl"
+import "bg.wl"
 
 SDL_Surface^ screen = null
 SDL_Surface^ buffer = null
+SDL_Surface^ light = null
 int8^ keystate = null
 bool running = true
 
 Owl^ owl = null
 List^ fireballs = null
 
+int getPixel(SDL_Surface^ s, int i, int j)
+{
+    int ^r = &(s.pixels[i * s.format.BytesPerPixel + j * s.pitch])
+    return ^r
+}
+
+void setPixel(SDL_Surface^ s, int i, int j, int v)
+{
+    int^ r = &(s.pixels[i * s.format.BytesPerPixel + j * s.pitch])
+    ^r = v
+}
+
+int convolutePixel(int a, int b)
+{
+    int c
+    uchar^ al = &a
+    uchar^ bl = &b
+    uchar^ cl = &c
+    float mod = (float: bl[0]) / 255.0
+    if(mod < 0.0) mod = 0.0
+    if(mod > 1.0) mod = 1.0
+    cl[0] = al[0] * mod
+    cl[1] = al[1] * mod
+    cl[2] = al[2] * mod
+    cl[3] = al[3] * mod
+    return c
+}
+
+void dolight()
+{
+    for(int j = 0; j < 240; j++)
+        for(int i = 0; i < 320; i++)
+        {
+            int bpxl = getPixel(buffer, i, j)
+            int lpxl = getPixel(light, i, j)
+            int epxl = convolutePixel(bpxl, lpxl)
+            setPixel(buffer, i, j, epxl)
+        }
+}
+
 void draw()
 {
-    SDL_BlitSurface(buffer, &buffer.clip_rect, screen, &screen.clip_rect)
-    owl_draw(owl, screen)
+    SDL_FillRect(buffer, null, 0)
+    SDL_FillRect(light, null, 0)
+
+    background_draw(buffer)
+    owl_draw(owl, buffer)
+    owl_light(owl, light)
+
     list_begin(fireballs)
     while(!list_end(fireballs))
     {
-        fireball_draw(list_get(fireballs), screen)
+        fireball_draw(list_get(fireballs), buffer)
+        fireball_light(list_get(fireballs), light)
         list_next(fireballs)
     }
+
+    dolight()
+    SDL_BlitSurface(buffer, &buffer.clip_rect, screen, &screen.clip_rect)
     SDL_Flip(screen)
-    SDL_FillRect(screen, null, 0)
 }
 
 void update()
 {
     input() 
+    background_update()
     owl_update(owl)
+
     list_begin(fireballs)
     while(!list_end(fireballs))
     {
-        fireball_update(list_get(fireballs))
+        if(fireball_update(list_get(fireballs)))
+            list_remove(fireballs)
         list_next(fireballs)
     }
+
     SDL_Delay(32)
 }
 
@@ -70,7 +124,10 @@ void init()
     screen = SDL_SetVideoMode(320, 240, 0, SDL_SWSURFACE)
     buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen.format.BitsPerPixel,
         screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
+    light = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen.format.BitsPerPixel,
+        screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
 
+    background_init()
     owl = owl_new()
     fireballs = list_new()
 
@@ -87,5 +144,5 @@ int main(int argc, char^^ argv)
         draw()
     }
 
-    return 0    
+    return 0
 }
