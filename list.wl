@@ -15,7 +15,7 @@ struct List
 
 List^ list_new()
 {
-    List^ l = malloc(8)
+    List^ l = malloc(16)
     l.first = null
     l.ptr = null
     return l
@@ -32,7 +32,8 @@ void list_add(List^ l, void^ v)
 
 void list_begin(List^ l)
 {
-    l.ptr = l.first    
+    if(l != null)
+        l.ptr = l.first
 }
 
 bool list_end(List ^l)
@@ -42,9 +43,9 @@ bool list_end(List ^l)
 
 void^ list_next(List ^l)
 {
-    if(!(l.ptr == null)) {
-        l.ptr = (Node^: l.ptr).next
-        if(!(l.ptr == null))
+    if(l.ptr != null) {
+        l.ptr = l.ptr.next
+        if(l.ptr != null)
             return l.ptr.val
     }
     return int8^: null
@@ -57,18 +58,26 @@ void^ list_get(List^ l)
 
 void^ list_remove(List ^l)
 {
-    void^ val = (Node^: l.ptr).val
-    Node^ cont = (Node^: l.ptr).next
-    if(!(l.ptr.prev == null))
+    void^ val = l.ptr.val
+    Node^ prev = l.ptr.prev
+    Node^ next = l.ptr.next
+    Node^ n = l.ptr
+
+    if(prev != null)
     {
-        (Node^: l.ptr.prev).next = (Node^:l.ptr).next
+        prev.next = next
+    } else
+    {
+        l.first = next
     }
 
-    if(!(l.ptr.next == null))
-    {
-        (Node^: l.ptr.next).prev = (Node^:l.ptr).prev 
-    }
+    if(next != null)
+        next.prev = prev
 
-    l.ptr = cont
+    if(prev != null)
+        l.ptr = prev
+    else 
+        l.ptr = next
+
     return val
 }

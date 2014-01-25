@@ -11,6 +11,10 @@ program.ll: $(SRC)
 program.o: program.ll
 	llc program.ll --filetype=obj -o program.o -O0
 
+.PHONY: interpret
+interpret: program.ll
+	lli -load /usr/lib/libSDL-1.2.so.0 -load /usr/lib/libSDL_image.so program.ll
+
 clean:
 	rm -f program.o
 	rm -f program.ll

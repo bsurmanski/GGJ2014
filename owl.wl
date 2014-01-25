@@ -37,7 +37,7 @@ Owl^ owl_new()
     o.wingl = sprite_new("res/owlwingl.png") 
     o.wingr = sprite_new("res/owlwingr.png") 
     o.tail = sprite_new("res/owltail.png")
-    o.halo = sprite_new("res/owlhalo.png")
+    o.halo = sprite_new("res/halo256.png")
     
     return o
 }
@@ -50,13 +50,13 @@ void owl_update(Owl^ o)
     o.tail.y = o.y + TAILY
     o.body.x = o.x - BODYX
     o.body.y = o.y + BODYY
-    o.wingl.x = o.x - WINGX - 8.0
+    o.wingl.x = o.x - WINGX - 16.0
     o.wingl.y = o.y + WINGY
-    o.wingr.x = o.x + WINGX - 8.0
+    o.wingr.x = o.x + WINGX - 16.0
     o.wingr.y = o.y + WINGY
 
-    o.halo.x = o.x - HALOX
-    o.halo.y = o.y - HALOY
+    o.halo.x = o.x - o.halo.img.w / 2
+    o.halo.y = o.y - o.halo.img.h / 2
 }
 
 void owl_light(Owl^ o, SDL_Surface^ dst)

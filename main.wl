@@ -8,6 +8,8 @@ import "owl.wl"
 import "fireball.wl"
 import "list.wl"
 import "bg.wl"
+import "particle.wl"
+import "mouse.wl"
 
 SDL_Surface^ screen = null
 SDL_Surface^ buffer = null
@@ -20,12 +22,15 @@ List^ fireballs = null
 
 int getPixel(SDL_Surface^ s, int i, int j)
 {
+    if(i < 0 || i > s.w || j < 0 || j > s.h) 
+        return 0
     int ^r = &(s.pixels[i * s.format.BytesPerPixel + j * s.pitch])
     return ^r
 }
 
-void setPixel(SDL_Surface^ s, int i, int j, int v)
+void setPixel(SDL_Surface^ s, int i, int j, uint v)
 {
+    if(i < 0 || i > s.w || j < 0 || j > s.h) return
     int^ r = &(s.pixels[i * s.format.BytesPerPixel + j * s.pitch])
     ^r = v
 }
@@ -58,6 +63,19 @@ void dolight()
         }
 }
 
+void scaleBlit()
+{
+    for(int j = 0; j < 480; j++)
+    {
+        for(int i = 0; i < 640; i++)
+        {
+            int pxl = getPixel(buffer, i / 2, j / 2) 
+            setPixel(screen, i, j, pxl)
+        }
+    }
+    //SDL_BlitSurface(buffer, &buffer.clip_rect, screen, &screen.clip_rect)
+}
+
 void draw()
 {
     SDL_FillRect(buffer, null, 0)
@@ -75,8 +93,11 @@ void draw()
         list_next(fireballs)
     }
 
+    frag_draw(buffer)
+    frag_light(light)
+
     dolight()
-    SDL_BlitSurface(buffer, &buffer.clip_rect, screen, &screen.clip_rect)
+    scaleBlit()
     SDL_Flip(screen)
 }
 
@@ -94,7 +115,7 @@ void update()
         list_next(fireballs)
     }
 
-    SDL_Delay(32)
+    SDL_Delay(16)
 }
 
 float OWLSPEED = 2.0
@@ -121,17 +142,20 @@ void addFireball()
 
 void init()
 {
-    screen = SDL_SetVideoMode(320, 240, 0, SDL_SWSURFACE)
+    screen = SDL_SetVideoMode(640, 480, 0, SDL_SWSURFACE)
     buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen.format.BitsPerPixel,
         screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
     light = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, screen.format.BitsPerPixel,
         screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
 
+    srand(0)
     background_init()
+    particle_init()
+    mice_init()
     owl = owl_new()
     fireballs = list_new()
 
-    SDL_WM_SetCaption("Jam", null)
+    SDL_WM_SetCaption("Jam 2014", null)
 }
 
 int main(int argc, char^^ argv)
