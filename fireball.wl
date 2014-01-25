@@ -17,7 +17,7 @@ Fireball^ fireball_new(float x, float y)
 {
     if(fireballLight == null)
     {
-        fireballLight = sprite_new("res/fireball.png")    
+        fireballLight = sprite_new("res/fbhalo.png")    
     }
 
     if(fireballSprite == null)
@@ -43,8 +43,8 @@ bool fireball_update(Fireball^ fb)
 
 void fireball_light(Fireball^ fb, SDL_Surface^ dst)
 {
-    fireballLight.x = fb.x
-    fireballLight.y = fb.y
+    fireballLight.x = fb.x - 12
+    fireballLight.y = fb.y - 12
     sprite_draw(dst, fireballLight)    
 }
 
