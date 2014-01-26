@@ -8,15 +8,9 @@ import "particle.wl"
 import "halo.wl"
 
 Sprite^ fireballSprite = null
-Sprite^ fireballLight = null
 
 Particle^ fireball_new(float x, float y)
 {
-    if(fireballLight == null)
-    {
-        fireballLight = sprite_new("res/halo48.png")    
-    }
-
     if(fireballSprite == null)
     {
         fireballSprite = sprite_new("res/fireball.png")
@@ -30,12 +24,13 @@ bool fireball_update(Particle^ fb)
 {
     fb.y = fb.y - 5.0
 
-    float r = rand() / float: RAND_MAX
+    float r = rand()
+    r = r / float: RAND_MAX
 
-    //if(r < 0.5)
-    //{
-        //frag_new(fb.x, fb.y) 
-    //}
+    if(r < 0.05)
+    {
+        frag_new(fb.x, fb.y) 
+    }
 
     return (fb.y > 300.0 ||
         fb.y < 0.0 - 50.0 ||

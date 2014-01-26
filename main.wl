@@ -13,21 +13,27 @@ import "mouse.wl"
 import "halo.wl"
 import "bush.wl"
 import "fire.wl"
+import "score.wl"
+import "hunger.wl"
 
 SDL_Surface^ screen = null
 SDL_Surface^ buffer = null
 SDL_Surface^ light = null
 SDL_Surface^ title = null
 SDL_Surface^ howto = null
+SDL_Surface^ highscore = null
 int8^ keystate = null
 bool running = true
+bool alive = true
 
-Owl^ owl = null
+uint hunger = 1500
+uint fireballPower = 100
 List^ fireballs = null
+Owl^ owl = null
 
 int getPixel(SDL_Surface^ s, int i, int j)
 {
-    if(i < 0 || i > s.w || j < 0 || j > s.h) 
+    if(i < 0 || i >= s.w || j < 0 || j >= s.h) 
         return 0
     int ^r = &(s.pixels[i * s.format.BytesPerPixel + j * s.pitch])
     return ^r
@@ -35,7 +41,7 @@ int getPixel(SDL_Surface^ s, int i, int j)
 
 void setPixel(SDL_Surface^ s, int i, int j, uint v)
 {
-    if(i < 0 || i > s.w || j < 0 || j > s.h) return
+    if(i < 0 || i >= s.w || j < 0 || j >= s.h) return
     int^ r = &(s.pixels[i * s.format.BytesPerPixel + j * s.pitch])
     ^r = v
 }
@@ -75,6 +81,15 @@ float distanceTo(float ax, float ay, float bx, float by)
     return dx * dx + dy * dy //meh, who needs squareroot?
 }
 
+void addFireball()
+{
+    if(fireballPower > 20)
+    {
+        fireballPower = fireballPower - 20
+        list_add(fireballs, fireball_new(owl.x, owl.y - 24))    
+    }
+}
+
 // this is my favourite function
 // and would be even better if not for the N^2 complexity
 // ...
@@ -91,7 +106,7 @@ void burnify()
         while(!list_end(mice))
         {
             Mouse^ ms = list_get(mice)
-            if(distanceTo(ms.x, ms.y, fb.x, fb.y) < 40)
+            if(distanceTo(ms.x, ms.y, fb.x, fb.y) < 75)
                 mouse_enflame(ms)
             list_next(mice)    
         }
@@ -100,7 +115,7 @@ void burnify()
         while(!list_end(bushes))
         {
             Bush^ b = list_get(bushes)
-            if(distanceTo(b.x, b.y, fb.x, fb.y) < 50)
+            if(distanceTo(b.x, b.y, fb.x, fb.y) < 120)
                 bush_enflame(b)
             list_next(bushes)
         }
@@ -115,10 +130,22 @@ void eatifyMice()
     while(!list_end(mice))
     {
         Mouse^ ms = list_get(mice)
-        if(distanceTo(ms.x, ms.y, owl.head.x, owl.head.y) < 50)
+        if(distanceTo(ms.x, ms.y, owl.head.x, owl.head.y) < 75)
         {
+            if(ms.cook == 0)
+            {
+                score_add(10)
+                hunger = hunger + 50
+            } else if(ms.cook == 1)
+            {
+                score_add(50)
+                hunger = hunger + 250
+            } else if(ms.cook == 2)
+            {
+                score_add(5)
+                hunger = hunger + 10
+            }
             list_remove(mice)
-            //TODO: score points for the eatan
         }
         list_next(mice)
     }
@@ -155,8 +182,23 @@ void draw()
         list_next(fireballs)
     }
 
-    frag_draw(buffer)
-    frag_light(light)
+    frag_draw(buffer, light)
+    score_draw(buffer, light)
+
+
+    int hungerLevel = 0
+    if(hunger >= 2000) hungerLevel = 9 
+    else if(hunger >= 1800) hungerLevel = 8
+    else if(hunger >= 1600) hungerLevel = 7
+    else if(hunger >= 1400) hungerLevel = 6
+    else if(hunger >= 1200) hungerLevel = 5
+    else if(hunger >= 1000) hungerLevel = 4
+    else if(hunger >= 800) hungerLevel = 3
+    else if(hunger >= 600) hungerLevel = 2
+    else if(hunger >= 400) hungerLevel = 1
+    else if(hunger >= 200) hungerLevel = 0
+
+    hunger_draw(buffer, light, hungerLevel)
 
     dolight()
     scaleBlit(screen, buffer)
@@ -165,11 +207,15 @@ void draw()
 
 void update()
 {
+    hunger--
+    if(!hunger) alive = false
+    if(fireballPower < 200) fireballPower++
     input() 
     background_update()
     bushes_update()
     owl_update(owl)
     mice_update()
+    frag_update()
 
     list_begin(fireballs)
     while(!list_end(fireballs))
@@ -181,6 +227,7 @@ void update()
         list_next(fireballs)
     }
 
+
     burnify()
     eatifyMice()
 
@@ -188,6 +235,7 @@ void update()
 }
 
 float OWLSPEED = 2.0
+uint fireballTimer = 5
 void input()
 {
     SDL_PumpEvents()
@@ -201,12 +249,12 @@ void input()
     if(owl.x > 320) owl.x = 320
     if(owl.y < 0) owl.y = 0
     if(owl.y > 240) owl.y = 240
-    if(keystate[SDLK_a]) addFireball()
-}
-
-void addFireball()
-{
-    list_add(fireballs, fireball_new(owl.x, owl.y - 24))
+    if(keystate[SDLK_a] && fireballTimer == 0)
+    { 
+        addFireball()
+        fireballTimer = 10
+    }
+    if(fireballTimer) fireballTimer--
 }
 
 void init()
@@ -218,29 +266,59 @@ void init()
         screen.format.Rmask, screen.format.Gmask, screen.format.Bmask, screen.format.Amask)
 
     title = IMG_Load("res/title.png")
+    howto = IMG_Load("res/instructions.png")
+    highscore = IMG_Load("res/highscore.png")
 
+    fireballs = list_new()
     srand(0)
     background_init()
+    score_init()
     fire_init()
     halo_init()
     particle_init()
     mice_init()
     bush_init()
+    hunger_init()
     owl = owl_new()
-    fireballs = list_new()
 
     SDL_WM_SetCaption("Jam 2014", null)
 }
 
 void waitOnSurface(SDL_Surface^ sf)
 {
+    printf("waiting\n")
     bool escape = false
+    int timeout = 20
     while(!escape)
     {
-        scaleBlit(screen, sf)  
+        if(timeout) timeout--
+        SDL_FillRect(buffer, null, 0)
+        SDL_BlitSurface(sf, null, buffer, null)
+        scaleBlit(screen, buffer)
         SDL_PumpEvents()
         keystate = SDL_GetKeyState(0)
-        if(keystate[SDLK_a]) escape = true
+        if(keystate[SDLK_a] && !timeout) escape = true
+        SDL_Flip(screen)
+        SDL_Delay(16)
+    }
+}
+
+void waitOnHighscore(SDL_Surface^ sf)
+{
+    printf("waiting\n")
+    bool escape = false
+    int timeout = 20
+    while(!escape)
+    {
+        if(timeout) timeout--
+        SDL_FillRect(buffer, null, 0)
+        SDL_BlitSurface(sf, null, buffer, null)
+        score_drawOffset(sf, light, 128, 128)
+        scaleBlit(screen, buffer)
+        SDL_PumpEvents()
+        keystate = SDL_GetKeyState(0)
+        if(keystate[SDLK_a] && !timeout) escape = true
+        SDL_Flip(screen)
         SDL_Delay(16)
     }
 }
@@ -249,16 +327,21 @@ int main(int argc, char^^ argv)
 {
     init()
 
-    /*
-        waitOnSurface(title)
-        waitOnSurface(howto)
-    */
-
     while(running)
     {
-        input()
-        update()
-        draw()
+        waitOnSurface(title)
+        waitOnSurface(howto)
+
+        hunger = 1500
+        score_set(0)
+        alive = true
+        while(alive)
+        {
+            input()
+            update()
+            draw()
+        }
+        waitOnHighscore(highscore)
     }
 
     return 0

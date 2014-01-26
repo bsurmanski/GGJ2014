@@ -51,13 +51,16 @@ void bush_update(Bush^ b)
     b.timer--
 }
 
+uint bushTimer = 50
 void bushes_update()
 {
-    if(nbushes < 5)
+    bushTimer--
+    if(nbushes < 6 && !bushTimer)
     {
         list_add(bushes, bush_new())
         nbushes++
     }
+    if(bushTimer == 0) bushTimer = 50
 
     list_begin(bushes)
     while(!list_end(bushes))

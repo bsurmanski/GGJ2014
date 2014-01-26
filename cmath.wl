@@ -24,6 +24,7 @@ double sinh(double x);
 double tanh(double x);
 double exp(double x);
 double log(double x);
+double log10(double x);
 double pow(double base, double exp);
 double sqrt(double x);
 void sincos(double x, double^ sn, double^ cs);

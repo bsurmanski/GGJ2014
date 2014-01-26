@@ -9,6 +9,8 @@ import "fire.wl"
 List^ mice = null
 Sprite^ mouseSprite = null
 Sprite^^ mouse = null
+uint nmice = 0
+uint micemax = 5
 
 struct Mouse
 {
@@ -26,20 +28,19 @@ void mice_init()
     mice = list_new()
     mouse = malloc(8 * 10)
     mouse[0] = sprite_new("res/mouse.png")
-    mouse[1] = sprite_new("res/mouseburnt.png")
-    list_add(mice, mouse_new())
-    list_add(mice, mouse_new())
-    list_add(mice, mouse_new())
-    list_add(mice, mouse_new())
+    mouse[1] = sprite_new("res/mousecooked.png")
+    mouse[2] = sprite_new("res/mouseburnt.png")
 }
 
 Mouse^ mouse_new()
 {
     Mouse^ m = malloc(32)
-    m.x = 40
-    m.y = 40
-    m.vx = 0
-    m.vy = 0
+    float r = rand()
+    m.x = ((r / float: RAND_MAX) * 320.0)
+    m.y = 0 - 20
+    r = rand()
+    m.vx = ((r / float: RAND_MAX) * 1.0) - 0.5
+    m.vy = 0.1
     m.timer = 0
     m.flaming = false
     m.cook = 0
@@ -57,15 +58,30 @@ void mouse_update(Mouse^ m)
     {
         if(m.flaming)
         {
-            if(m.cook == 0) m.cook++ //TODO: update when more cooked mice avail
-            m.timer = 50
+            if(m.cook == 0)
+            { 
+                m.cook = 1
+                m.timer = 50
+            } else if(m.cook = 1)
+            {
+                m.cook = 2
+                m.flaming = false
+                m.timer = 50
+                
+            } else
+            {
+                m.timer = 50    
+            }
             m.vx = 0
             m.vy = 0
-        } else
+        } else if(m.cook == 0)
         {
             m.timer = 100    
-            m.vx = ((rand() / float: RAND_MAX) * 2.0)
-            m.vy = ((rand() / float: RAND_MAX) * 2.0) - 0.5
+            float r = rand()
+            m.vx = ((r / float: RAND_MAX) * 1.0) - 0.5
+            //m.vx = ((r / float: RAND_MAX) * 2.0)
+            r = rand()
+            m.vy = ((r / float: RAND_MAX) * 2.0) - 0.5
         }
     }
 
@@ -75,7 +91,7 @@ void mouse_update(Mouse^ m)
 void mouse_enflame(Mouse^ m)
 {
     m.flaming = true
-    m.timer = 100
+    m.timer = 30
 }
 
 void mouse_draw(Mouse^ m, SDL_Surface^ sf, SDL_Surface^ lit)
@@ -95,8 +111,16 @@ void mouse_draw(Mouse^ m, SDL_Surface^ sf, SDL_Surface^ lit)
     }
 }
 
+uint miceTimer = 50
 void mice_update()
 {
+    miceTimer--
+    if(nmice < micemax && !miceTimer)
+    {
+        list_add(mice, mouse_new())  
+    }
+    if(miceTimer == 0) miceTimer = 50
+
     list_begin(mice)
     while(!list_end(mice))
     {

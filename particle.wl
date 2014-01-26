@@ -1,4 +1,5 @@
 
+import "halo.wl"
 import "main.wl"
 import "cstdlib.wl"
 import "cstdio.wl"
@@ -11,15 +12,19 @@ struct Particle
     float y
     float vx
     float vy
+    uint timeout
 }
 
 List^ frag_list = null
 
 Particle^ particle_new(float x, float y, float vx, float vy)
 {
-    Particle^ p = malloc(16)
+    Particle^ p = malloc(32)
     p.x = x
     p.y = y
+    p.vx = vx
+    p.vy = vy
+    p.timeout = 100
     return p
 }
 
@@ -33,20 +38,12 @@ void particle_init()
 
 void frag_new(float x, float y)
 {
-    Particle ^p = particle_new(x, y, 1.0, 1.0)    
+    float rx = rand()
+    float ry = rand()
+    rx = ((rx / float: RAND_MAX) * 1.0) - 0.5
+    ry = 0.0 - (ry / float: RAND_MAX) * 1.0 - 0.5
+    Particle ^p = particle_new(x, y, rx, ry)    
     list_add(frag_list, p)
-}
-
-void frag_light(SDL_Surface ^su)
-{
-    list_begin(frag_list)
-    while(!list_end(frag_list))
-    {
-        Particle^ p = list_get(frag_list)
-        uint val = 255 + (255 << 8) + (255 << 16) + (255 << 24)
-        setPixel(su, p.x, p.y, val)
-        list_next(frag_list)
-    }
 }
 
 void frag_update()
@@ -57,19 +54,25 @@ void frag_update()
         Particle^ p = list_get(frag_list)
         p.x = p.x + p.vx
         p.y = p.y + p.vy
-        if(p.x > 320 || p.x < 0 || p.y > 240 || p.y < 0) list_remove(frag_list)
+        p.timeout-- 
+        if(p.timeout == 0) list_remove(frag_list)
         list_next(frag_list)
     }
 }
 
-void frag_draw(SDL_Surface ^su)
+void frag_draw(SDL_Surface ^su, SDL_Surface^ lit)
 {
     list_begin(frag_list)
     while(!list_end(frag_list))
     {
         Particle^ p = list_get(frag_list)
-        p.x = 5
-        setPixel(su, p.x, p.y, 1000)
+        uint cval = 128 + (128 << 8) + (200 << 16) + (150 << 24)
+        setPixel(su, p.x, p.y, cval)
+
+        //light
+        //setPixel(lit, p.x, p.y, lval)
+        halo_draw(lit, 1, p.x, p.y)
+
         list_next(frag_list)
     }
 }
