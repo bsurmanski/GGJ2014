@@ -18,5 +18,5 @@ void background_update()
 
 void background_draw(SDL_Surface^ dst)
 {
-    sprite_draw(dst, bg)
+    sprite_drawNormal(dst, bg)
 }

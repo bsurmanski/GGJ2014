@@ -78,7 +78,7 @@ Sprite^ sprite_new(char^ filenm)
     return sprite
 }
 
-void sprite_draw(SDL_Surface ^dst, Sprite^ sp)
+void sprite_drawNormal(SDL_Surface ^dst, Sprite^ sp)
 {
     SDL_Rect srcrect
     SDL_Rect dstrect
@@ -90,6 +90,24 @@ void sprite_draw(SDL_Surface ^dst, Sprite^ sp)
 
     dstrect.x = sp.x
     dstrect.y = sp.y
+    dstrect.w = sp.img.w
+    dstrect.h = sp.img.h
+
+    SDL_BlitSurface(sp.img, &srcrect, dst, &dstrect)
+}
+
+void sprite_draw(SDL_Surface ^dst, Sprite^ sp)
+{
+    SDL_Rect srcrect
+    SDL_Rect dstrect
+
+    srcrect.x = 0
+    srcrect.y = 0
+    srcrect.w = sp.img.w
+    srcrect.h = sp.img.h
+
+    dstrect.x = sp.x - sp.img.w / 2.0
+    dstrect.y = sp.y - sp.img.h / 2.0
     dstrect.w = sp.img.w
     dstrect.h = sp.img.h
 

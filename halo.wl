@@ -22,7 +22,7 @@ void halo_init()
 
 void halo_draw(SDL_Surface^ dst, int i, float x, float y)
 {
-    halos[i].x = x - halos[i].img.w / 2
-    halos[i].y = y - halos[i].img.h / 2
+    halos[i].x = x
+    halos[i].y = y
     sprite_draw(dst, halos[i])
 }

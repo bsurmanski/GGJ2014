@@ -11,6 +11,8 @@ import "bg.wl"
 import "particle.wl"
 import "mouse.wl"
 import "halo.wl"
+import "bush.wl"
+import "fire.wl"
 
 SDL_Surface^ screen = null
 SDL_Surface^ buffer = null
@@ -75,7 +77,11 @@ float distanceTo(float ax, float ay, float bx, float by)
 
 // this is my favourite function
 // and would be even better if not for the N^2 complexity
-void burnifyMice()
+// ...
+// used to be soooo much cooler when it only burned mice. 
+// named: BURNIFYMICE. now, it burnifies other stuff and its
+// boring
+void burnify()
 {
     list_begin(fireballs)
     while(!list_end(fireballs))
@@ -85,11 +91,36 @@ void burnifyMice()
         while(!list_end(mice))
         {
             Mouse^ ms = list_get(mice)
-            if(distanceTo(ms.x, ms.y, fb.x, fb.y) < 20)
+            if(distanceTo(ms.x, ms.y, fb.x, fb.y) < 40)
                 mouse_enflame(ms)
             list_next(mice)    
         }
+        
+        list_begin(bushes)
+        while(!list_end(bushes))
+        {
+            Bush^ b = list_get(bushes)
+            if(distanceTo(b.x, b.y, fb.x, fb.y) < 50)
+                bush_enflame(b)
+            list_next(bushes)
+        }
+
         list_next(fireballs) 
+    }
+}
+
+void eatifyMice()
+{
+    list_begin(mice)
+    while(!list_end(mice))
+    {
+        Mouse^ ms = list_get(mice)
+        if(distanceTo(ms.x, ms.y, owl.head.x, owl.head.y) < 50)
+        {
+            list_remove(mice)
+            //TODO: score points for the eatan
+        }
+        list_next(mice)
     }
 }
 
@@ -112,17 +143,15 @@ void draw()
     SDL_FillRect(light, null, 0)
 
     background_draw(buffer)
-    mice_draw(buffer)
-    owl_draw(owl, buffer)
-    owl_light(owl, light)
-
+    mice_draw(buffer, light)
+    bushes_draw(buffer, light)
+    owl_draw(owl, buffer, light)
     
 
     list_begin(fireballs)
     while(!list_end(fireballs))
     {
-        fireball_draw(list_get(fireballs), buffer)
-        fireball_light(list_get(fireballs), light)
+        fireball_draw(list_get(fireballs), buffer, light)
         list_next(fireballs)
     }
 
@@ -140,6 +169,7 @@ void update()
 {
     input() 
     background_update()
+    bushes_update()
     owl_update(owl)
     mice_update()
 
@@ -153,7 +183,8 @@ void update()
         list_next(fireballs)
     }
 
-    burnifyMice()
+    burnify()
+    eatifyMice()
 
     SDL_Delay(8)
 }
@@ -177,7 +208,7 @@ void input()
 
 void addFireball()
 {
-    list_add(fireballs, fireball_new(owl.x - 4, owl.y - 8))
+    list_add(fireballs, fireball_new(owl.x, owl.y - 24))
 }
 
 void init()
@@ -192,9 +223,11 @@ void init()
 
     srand(0)
     background_init()
+    fire_init()
     halo_init()
     particle_init()
     mice_init()
+    bush_init()
     owl = owl_new()
     fireballs = list_new()
 

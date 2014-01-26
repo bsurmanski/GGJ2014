@@ -5,6 +5,7 @@ import "sdl.wl"
 import "list.wl"
 import "main.wl"
 import "particle.wl"
+import "halo.wl"
 
 Sprite^ fireballSprite = null
 Sprite^ fireballLight = null
@@ -36,22 +37,17 @@ bool fireball_update(Particle^ fb)
         //frag_new(fb.x, fb.y) 
     //}
 
-    return (fb.y > 240.0 ||
-        fb.y < 0.0 ||
-        fb.x < 0.0 ||
-        fb.x > 320.0)
+    return (fb.y > 300.0 ||
+        fb.y < 0.0 - 50.0 ||
+        fb.x < 0.0 - 50.0 ||
+        fb.x > 350.0)
 }
 
-void fireball_light(Particle^ fb, SDL_Surface^ dst)
-{
-    fireballLight.x = fb.x - fireballLight.img.w / 2
-    fireballLight.y = fb.y - fireballLight.img.h / 2
-    sprite_draw(dst, fireballLight)    
-}
-
-void fireball_draw(Particle^ fb, SDL_Surface^ dst)
+void fireball_draw(Particle^ fb, SDL_Surface^ dst, SDL_Surface^ lit)
 {
     fireballSprite.x = fb.x
     fireballSprite.y = fb.y
     sprite_draw(dst, fireballSprite)
+
+    halo_draw(lit, 4, fb.x, fb.y)
 }

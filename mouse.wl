@@ -56,8 +56,8 @@ void mouse_update(Mouse^ m)
     if(m.timer == 0)
     {
         m.timer = 100    
-        m.vx = ((rand() / float: RAND_MAX) / 4.0) - 0.125
-        m.vy = ((rand() / float: RAND_MAX) / 4.0) - 0.125
+        m.vx = ((rand() / float: RAND_MAX) * 2.0)
+        m.vy = ((rand() / float: RAND_MAX) * 2.0) - 0.5
     }
 
     m.timer = m.timer - 1
@@ -106,7 +106,7 @@ void mice_update()
         Mouse^ m = list_get(mice)
         mouse_update(m)
 
-        if(m.y > 240) list_remove(mice)
+        if(m.y > 300) list_remove(mice)
         list_next(mice)    
     }
 }
@@ -121,12 +121,14 @@ void mice_light(SDL_Surface^ sf)
     }
 }
 
-void mice_draw(SDL_Surface^ sf)
+void mice_draw(SDL_Surface^ sf, SDL_Surface^ lit)
 {
     list_begin(mice)
     while(!list_end(mice))
     {
-        mouse_draw(list_get(mice), sf)    
+        Mouse^ m = list_get(mice)
+        mouse_draw(m, sf)
+        mouse_light(m, lit)
         list_next(mice)
     }
 }

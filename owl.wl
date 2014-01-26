@@ -13,20 +13,19 @@ struct Owl
     Sprite^ wingl
     Sprite^ wingr
     Sprite^ tail
-    Sprite^ halo
 }
 
-int HEADX = 8 
-int HEADY = 10 
-int TAILX = 8 
-int TAILY = 30
-int BODYX = 16
+int HEADX = 0 
+int HEADY = 20 
+int TAILX = 0 
+int TAILY = 20
+int BODYX = 0
 int BODYY = 0
 int WINGX = 20
-int WINGY = 8
+int WINGY = 0
 
-int HALOX = 32
-int HALOY = 16
+int HALOX = 0
+int HALOY = 0
 
 Owl^ owl_new()
 {
@@ -38,38 +37,30 @@ Owl^ owl_new()
     o.wingl = sprite_new("res/owlwingl.png") 
     o.wingr = sprite_new("res/owlwingr.png") 
     o.tail = sprite_new("res/owltail.png")
-    o.halo = sprite_new("res/halo256.png")
-    
     return o
 }
 
 void owl_update(Owl^ o)
 {
-    o.head.x = o.x - HEADX    
+    o.head.x = o.x
     o.head.y = o.y - HEADY
-    o.tail.x = o.x - TAILX
+    o.tail.x = o.x
     o.tail.y = o.y + TAILY
-    o.body.x = o.x - BODYX
-    o.body.y = o.y + BODYY
-    o.wingl.x = o.x - WINGX - 16.0
+    o.body.x = o.x
+    o.body.y = o.y
+    o.wingl.x = o.x - WINGX
     o.wingl.y = o.y + WINGY
-    o.wingr.x = o.x + WINGX - 16.0
+    o.wingr.x = o.x + WINGX
     o.wingr.y = o.y + WINGY
-
-    o.halo.x = o.x - o.halo.img.w / 2
-    o.halo.y = o.y - o.halo.img.h / 2
 }
 
-void owl_light(Owl^ o, SDL_Surface^ dst)
-{
-    halo_draw(dst, 5, o.x, o.y)
-}
-
-void owl_draw(Owl^ o, SDL_Surface^ dst)
+void owl_draw(Owl^ o, SDL_Surface^ dst, SDL_Surface^ lit)
 {
     sprite_draw(dst, o.body) 
     sprite_draw(dst, o.head) 
     sprite_draw(dst, o.wingl) 
     sprite_draw(dst, o.wingr) 
     sprite_draw(dst, o.tail) 
+
+    halo_draw(lit, 5, o.x, o.y)
 }

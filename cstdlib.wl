@@ -1,6 +1,6 @@
 import "cstdio.wl"
 
-int RAND_MAX = 214783647
+ulong RAND_MAX = 2147483647
 int EXIT_FAILURE = 1
 int EXIT_SUCCESS = 0
 
@@ -16,15 +16,16 @@ long strtoq(char^ nptr, char^^ endptr, int base);
 ulong strtouq(char^ nptr, char^^ endptr, int base);
 char ^initstate(uint seed, char^ statebuf, long statelen);
 char ^setstate(char ^statebuf);
-int rand();
+long random();
+uint rand();
 void srand(uint seed);
-int rand_r(uint^ seed);
+uint rand_r(uint^ seed);
 double drand48();
 double erand48(ushort^ xsubi);
-long lrand48();
-long nrand(ushort^ xsubi);
-long mrand48();
-long jrand48(ushort^ xsubi);
+ulong lrand48();
+ulong nrand(ushort^ xsubi);
+ulong mrand48();
+ulong jrand48(ushort^ xsubi);
 void srand48(long seedval);
 ushort^ seed48(ushort^ seed16v);
 
