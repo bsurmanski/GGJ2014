@@ -155,8 +155,6 @@ void draw()
         list_next(fireballs)
     }
 
-    mice_light(light)
-
     frag_draw(buffer)
     frag_light(light)
 
