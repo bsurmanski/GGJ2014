@@ -139,7 +139,7 @@ void eatifyMice()
             } else if(ms.cook == 1)
             {
                 score_add(50)
-                hunger = hunger + 250
+                hunger = hunger + 200
             } else if(ms.cook == 2)
             {
                 score_add(5)
@@ -240,7 +240,11 @@ void input()
 {
     SDL_PumpEvents()
     keystate = SDL_GetKeyState(0)
-    if(keystate[SDLK_SPACE]) running = false
+    //if(keystate[SDLK_SPACE]) running = false
+    if(keystate[SDLK_ESCAPE]) {
+        running = false
+        alive = false
+    }
     if(keystate[SDLK_UP]) owl.y = owl.y - OWLSPEED
     if(keystate[SDLK_DOWN]) owl.y = owl.y + OWLSPEED
     if(keystate[SDLK_RIGHT]) owl.x = owl.x + OWLSPEED

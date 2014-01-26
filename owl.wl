@@ -3,6 +3,7 @@ import "cstdlib.wl"
 import "sdl.wl"
 import "fireball.wl"
 import "halo.wl"
+import "main.wl"
 
 struct Owl
 {
@@ -62,5 +63,38 @@ void owl_draw(Owl^ o, SDL_Surface^ dst, SDL_Surface^ lit)
     sprite_draw(dst, o.wingr) 
     sprite_draw(dst, o.tail) 
 
-    halo_draw(lit, 5, o.x, o.y)
+    if(hunger >= 2000)
+    {
+        halo_draw(lit, 2, o.x, o.y)
+    } else if(hunger >= 1800)
+    {
+        halo_draw(lit, 2, o.x, o.y)
+    } else if(hunger >= 1600)
+    {
+        halo_draw(lit, 3, o.x, o.y)
+    } else if(hunger >= 1400)
+    {
+        halo_draw(lit, 3, o.x, o.y)
+    } else if(hunger >= 1200)
+    {
+        halo_draw(lit, 4, o.x, o.y)
+    } else if(hunger >= 1000)
+    {
+        halo_draw(lit, 4, o.x, o.y)
+    } else if(hunger >= 800)
+    {
+        halo_draw(lit, 5, o.x, o.y)
+    } else if(hunger >= 600)
+    {
+        halo_draw(lit, 6, o.x, o.y)
+    } else if(hunger >= 400)
+    {
+        halo_draw(lit, 7, o.x, o.y)    
+    } else if(hunger >= 200)
+    {
+        halo_draw(lit, 8, o.x, o.y)    
+    } else
+    {
+        halo_draw(lit, 9, o.x, o.y)    
+    }
 }

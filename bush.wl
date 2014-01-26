@@ -9,8 +9,7 @@ import "cstdio.wl"
 import "cmath.wl"
 
 Sprite^ bush = null
-Sprite^ bushFire1 = null
-Sprite^ bushFire2 = null
+Sprite^ bushBurnt = null
 
 List^ bushes = null
 int nbushes = 0
@@ -20,12 +19,14 @@ struct Bush
     float x
     float y
     int timer
+    int burnTimer
     bool burning
 }
 
 void bush_init()
 {
     bush = sprite_new("res/bush.png") 
+    bushBurnt = sprite_new("res/bushburnt.png") 
     bushes = list_new()
 }
 
@@ -36,6 +37,7 @@ Bush^ bush_new()
     float rm = float: RAND_MAX
     b.x = (rf / rm) * 320
     b.y = 0.0 - 10.0
+    b.burnTimer = 100
     return b
 }
 
@@ -43,12 +45,16 @@ void bush_enflame(Bush^ b)
 {
     b.burning = true
     b.timer = 100
+    b.burnTimer = 100
 }
 
 void bush_update(Bush^ b)
 {
     b.y = b.y + 1
     b.timer--
+    if(b.burning && b.burnTimer)
+        b.burnTimer--
+    if(b.timer < 0) b.timer = 100
 }
 
 uint bushTimer = 50
@@ -77,9 +83,15 @@ void bushes_update()
 
 void bush_draw(Bush^ b, SDL_Surface^ dst, SDL_Surface^ lit)
 {
-    bush.x = b.x
-    bush.y = b.y
-    sprite_draw(dst, bush)
+    Sprite^ drawSprite = bush
+    if(b.burnTimer == 0)
+    {
+        drawSprite = bushBurnt    
+    }
+
+    drawSprite.x = b.x
+    drawSprite.y = b.y
+    sprite_draw(dst, drawSprite)
 
     if(b.burning)
     {

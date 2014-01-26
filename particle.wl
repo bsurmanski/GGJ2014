@@ -24,7 +24,9 @@ Particle^ particle_new(float x, float y, float vx, float vy)
     p.y = y
     p.vx = vx
     p.vy = vy
-    p.timeout = 100
+    float r = rand()
+    r = r / float: RAND_MAX
+    p.timeout = 150 * r
     return p
 }
 

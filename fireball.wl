@@ -27,7 +27,7 @@ bool fireball_update(Particle^ fb)
     float r = rand()
     r = r / float: RAND_MAX
 
-    if(r < 0.05)
+    if(r < 0.1)
     {
         frag_new(fb.x, fb.y) 
     }
