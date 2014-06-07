@@ -1,5 +1,7 @@
-import "cstdlib.wl"
-import "cmath.wl"
+use "importc"
+
+import(C) "/usr/include/stdlib.h"
+import(C) "/usr/include/math.h"
 
 struct Matrix
 {
@@ -26,7 +28,9 @@ void matrix_rotation(Matrix^ m, float rad)
 {
     float s
     float c
-    sincosf(rad, &s, &c)
+    s = sin(rad);
+    c = cos(rad);
+    //sincosf(rad, &s, &c)
     m.v[0] = c
     m.v[1] = 0.0-s
     m.v[2] = s

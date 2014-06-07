@@ -1,7 +1,10 @@
+use "importc"
+
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/stdlib.h"
+
 import "list.wl"
 import "sprite.wl"
-import "cstdlib.wl"
-import "sdl.wl"
 
 Sprite^^ hungers = null
 Sprite^ hunger0b = null

@@ -1,12 +1,15 @@
+use "importc"
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/stdlib.h"
+import(C) "/usr/include/stdio.h"
+import(C) "/usr/include/math.h"
+
+
 import "sprite.wl"
 import "fire.wl"
-import "sdl.wl"
 import "list.wl"
 import "fireball.wl"
 import "halo.wl"
-import "cstdlib.wl"
-import "cstdio.wl"
-import "cmath.wl"
 
 Sprite^ bush = null
 Sprite^ bushBurnt = null
@@ -37,6 +40,8 @@ Bush^ bush_new()
     float rm = float: RAND_MAX
     b.x = (rf / rm) * 320
     b.y = 0.0 - 10.0
+    b.burning = 0
+    b.timer = -1
     b.burnTimer = 100
     return b
 }

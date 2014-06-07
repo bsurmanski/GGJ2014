@@ -1,9 +1,11 @@
+use "importc"
+
+import(C) "/usr/include/stdlib.h"
+import(C) "/usr/include/stdio.h"
+import(C) "/usr/include/SDL/SDL.h"
 
 import "halo.wl"
 import "main.wl"
-import "cstdlib.wl"
-import "cstdio.wl"
-import "sdl.wl"
 import "list.wl"
 
 struct Particle

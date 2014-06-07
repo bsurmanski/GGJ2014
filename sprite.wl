@@ -1,10 +1,18 @@
-import "sdl.wl"
-import "cstdlib.wl"
-import "cstring.wl"
-import "cstdio.wl"
+use "importc"
+
+import(C) "/usr/include/stdlib.h"
+import(C) "/usr/include/string.h"
+import(C) "/usr/include/stdio.h"
+import(C) "/usr/include/math.h"
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/SDL/SDL_image.h"
+
 import "main.wl"
 
 //extern SDL_Surface^ screen
+
+int SDL_BlitSurface(SDL_Surface^ src, SDL_Rect^ srcrect, SDL_Surface^ dst, SDL_Rect^ dstrect)
+    return SDL_UpperBlit(src, srcrect, dst, dstrect);
 
 struct Sprite
 {

@@ -1,8 +1,11 @@
+use "importc"
+
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/stdio.h"
+
 import "particle.wl"
 import "list.wl"
-import "sdl.wl"
 import "sprite.wl"
-import "cstdlib.wl"
 import "halo.wl"
 import "fire.wl"
 
@@ -62,7 +65,7 @@ void mouse_update(Mouse^ m)
             { 
                 m.cook = 1
                 m.timer = 50
-            } else if(m.cook = 1)
+            } else if(m.cook == 1)
             {
                 m.cook = 2
                 m.flaming = false

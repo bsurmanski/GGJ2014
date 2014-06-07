@@ -1,7 +1,10 @@
-import "sdl.wl"
+use "importc"
 
-import "cstdlib.wl"
-import "cstdio.wl"
+import(C) "/usr/include/stdlib.h"
+import(C) "/usr/include/stdio.h"
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/SDL/SDL_image.h"
+
 import "matrix.wl"
 import "sprite.wl"
 import "owl.wl"
@@ -22,7 +25,7 @@ SDL_Surface^ light = null
 SDL_Surface^ title = null
 SDL_Surface^ howto = null
 SDL_Surface^ highscore = null
-int8^ keystate = null
+uint8^ keystate = null
 bool running = true
 bool alive = true
 
@@ -135,7 +138,7 @@ void eatifyMice()
             if(ms.cook == 0)
             {
                 score_add(10)
-                hunger = hunger + 50
+                hunger = hunger + 75
             } else if(ms.cook == 1)
             {
                 score_add(50)
@@ -143,7 +146,7 @@ void eatifyMice()
             } else if(ms.cook == 2)
             {
                 score_add(5)
-                hunger = hunger + 10
+                hunger = hunger + 20
             }
             list_remove(mice)
         }
@@ -231,7 +234,7 @@ void update()
     burnify()
     eatifyMice()
 
-    SDL_Delay(8)
+    SDL_Delay(2)
 }
 
 float OWLSPEED = 2.0
@@ -311,7 +314,7 @@ void waitOnHighscore(SDL_Surface^ sf)
 {
     printf("waiting\n")
     bool escape = false
-    int timeout = 20
+    int timeout = 50
     while(!escape)
     {
         if(timeout) timeout--

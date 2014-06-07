@@ -1,6 +1,9 @@
+use "importc"
+
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/stdlib.h"
+
 import "sprite.wl"
-import "sdl.wl"
-import "cstdlib.wl"
 
 Sprite^^ halos = null
 

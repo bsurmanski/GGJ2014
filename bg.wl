@@ -1,4 +1,6 @@
-import "sdl.wl"
+use "importc"
+
+import(C) "/usr/include/SDL/SDL.h"
 import "sprite.wl"
 
 Sprite^ bg = null

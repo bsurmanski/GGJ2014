@@ -1,7 +1,10 @@
-import "sdl.wl"
+use "importc"
+
+import(C) "/usr/include/stdlib.h"
+import(C) "/usr/include/math.h"
+import(C) "/usr/include/SDL/SDL.h"
+
 import "sprite.wl"
-import "cstdlib.wl"
-import "cmath.wl"
 
 Sprite^^ numbers = null
 Sprite^ scoreName = null

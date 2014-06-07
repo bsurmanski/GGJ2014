@@ -1,7 +1,10 @@
+use "importc"
+
+import(C) "/usr/include/SDL/SDL.h"
+import(C) "/usr/include/stdio.h"
+import(C) "/usr/include/stdlib.h"
+
 import "sprite.wl"
-import "cstdlib.wl"
-import "cstdio.wl"
-import "sdl.wl"
 import "list.wl"
 import "main.wl"
 import "particle.wl"

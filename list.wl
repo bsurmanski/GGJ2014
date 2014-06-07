@@ -1,4 +1,6 @@
-import "cstdlib.wl"
+use "importc"
+
+import(C) "/usr/include/stdlib.h"
 
 struct Node
 {
