@@ -1,3 +1,4 @@
 program
 program.ll
 program.o
+stderr.log

@@ -52,9 +52,9 @@ void setPixel(SDL_Surface^ s, int i, int j, uint v)
 int convolutePixel(int a, int b)
 {
     int c
-    uchar^ al = &a
-    uchar^ bl = &b
-    uchar^ cl = &c
+    uchar^ al = uchar^: &a
+    uchar^ bl = uchar^: &b
+    uchar^ cl = uchar^: &c
     float mod = (float: bl[0]) / 255.0
     if(mod < 0.0) mod = 0.0
     if(mod > 1.0) mod = 1.0
@@ -242,7 +242,7 @@ uint fireballTimer = 5
 void input()
 {
     SDL_PumpEvents()
-    keystate = SDL_GetKeyState(0)
+    keystate = SDL_GetKeyState(null)
     //if(keystate[SDLK_SPACE]) running = false
     if(keystate[SDLK_ESCAPE]) {
         running = false
@@ -303,7 +303,7 @@ void waitOnSurface(SDL_Surface^ sf)
         SDL_BlitSurface(sf, null, buffer, null)
         scaleBlit(screen, buffer)
         SDL_PumpEvents()
-        keystate = SDL_GetKeyState(0)
+        keystate = SDL_GetKeyState(null)
         if(keystate[SDLK_a] && !timeout) escape = true
         SDL_Flip(screen)
         SDL_Delay(16)
@@ -323,7 +323,7 @@ void waitOnHighscore(SDL_Surface^ sf)
         score_drawOffset(sf, light, 128, 128)
         scaleBlit(screen, buffer)
         SDL_PumpEvents()
-        keystate = SDL_GetKeyState(0)
+        keystate = SDL_GetKeyState(null)
         if(keystate[SDLK_a] && !timeout) escape = true
         SDL_Flip(screen)
         SDL_Delay(16)
